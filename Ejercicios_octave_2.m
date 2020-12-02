@@ -93,11 +93,12 @@ p2 = [1 -1 0 1]
 #Plucker
 l = p1'*p2 - p2'*p1 
 L = [l(1,2) l(1,3) l(1,4) l(2,3) l(4,2) l(2,4)]
-##ESTA SEGUNDA PARTE NO ESTOY SEGURO DE HACERLA BIEN
-puntos=[1 1 0;
--1 0 1;2 2 0];
-b=[0 0 0];
-puntos/b
+
+a=p2(1,3) 
+b=-p2(1,2)
+c=p2(1,3)*p1(1,3) -p2(1,2)*p1(1,2) 
+
+#y + 1 = 0
 
 ##EJ10
 L = [1 -1 1 0 2 2]
@@ -131,7 +132,7 @@ L = [1 -1 1 0 2 2]
 # y = 1+y2
 # z = 1+z2
 #  
-#
+# 
 #
 
 ##EJ11
@@ -190,4 +191,62 @@ patch('Vertices',vertices2,'Faces',F,...
       'FaceVertexCData',jet(4),'FaceColor','flat')
 view(10,2);
 ##EJ13
+matriz_i3 = [1 0 0  0;
+             0 1 0  0;
+             0 0 1  0];
+
+## Como está en x=1, tenemos que rotar -90 grados
+
+rotacion = [0 1 0 ;
+            -1 0 0 ;
+            0 0 1 ];
+         
+
+            
+##Matriz K ideal -- distacia al origen = 2
+K=[2 0 0;
+   0 2 0;
+   0 0 1];
+   
+##calculamos la matriz de camara
+matriz_camara = K*rotacion* matriz_i3;
+
+X = linspace(-100,100,10);
+Y = linspace(-100,100,10);
+[ XX, YY ] = meshgrid(X,Y);
+##Calculating z coordinate for planes
+### z = x - 7
+ZZ1 =-7 + XX + 0*YY;
+##ZZ2 = 4/3 - 2/3 * XX + 1/3 *YY;
+###Displaying:
+
+figure;
+hold on;
+mesh(XX,YY,ZZ1);
+mesh(XX,YY,ZZ2);
+
 ##EJ14
+function getHomografia (puntos1,puntos2,numero)
+ M=[];
+ P=[]; 
+  
+  for i=1:numero
+    x=puntos1(i,1);
+    y=puntos1(i,2);
+    xn=puntos2(i,1);
+    yn=puntos2(i,2);
+    m= [x y 1 0 0 0 -x*xn -y*xn;
+    0 0 0 x y 1 -x*yn -y*yn]
+    M =[M,m']
+    P = [P,puntos2(i,1:2)]
+  endfor
+  H=M\P'
+  sol = M*H -P
+  
+endfunction
+
+
+x1  =[1 0 1;0 1 1;0 0 1;1 1 1]
+x1_1=[2 1 1; 1 2 1;-1 1 1;1 0 1]
+
+getHomografia(x1,x1_1,4)
